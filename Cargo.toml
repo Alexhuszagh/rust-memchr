@@ -30,9 +30,12 @@ std = []
 # The 'use_std' feature is DEPRECATED. It will be removed in memchr 3. Until
 # then, it is alias for the 'std' feature.
 use_std = ["std"]
+# Use packed_simd features for vectorized memchr on non-x86.
+nightly = ['packed_simd_2']
 
 [dependencies]
 libc = { version = "0.2.18", default-features = false, optional = true }
+packed_simd_2 = { version = "0.3.4", optional = true }
 
 [dev-dependencies]
 quickcheck = { version = "1.0.3", default-features = false }
