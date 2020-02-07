@@ -159,12 +159,15 @@ mod c;
 mod fallback;
 mod iter;
 mod naive;
+#[cfg(all(
+    not(all(target_arch = "x86_64", memchr_runtime_simd)),
+    feature = "nightly"
+))]
+mod simd;
 #[cfg(test)]
 mod tests;
 #[cfg(all(target_arch = "x86_64", memchr_runtime_simd))]
 mod x86;
-#[cfg(all(not(all(target_arch = "x86_64", memchr_runtime_simd)), feature = "nightly"))]
-mod simd;
 
 /// An iterator over all occurrences of the needle in a haystack.
 #[inline]
