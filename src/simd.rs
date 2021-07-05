@@ -59,23 +59,27 @@ pub unsafe fn memchr(n1: u8, haystack: &[u8]) -> Option<usize> {
         let or3 = or1.bitor(or2);
         if or3.any() {
             let mut at = sub(ptr, start_ptr);
-            if eqa.any() {
-                return Some(at + forward_pos(eqa.bitmask()))
+            let mask = eqa.bitmask();
+            if mask != 0 {
+                return Some(at + forward_pos(mask));
             }
 
             at += VECTOR_SIZE;
-            if eqb.any() {
-                return Some(at + forward_pos(eqb.bitmask()))
+            let mask = eqb.bitmask();
+            if mask != 0 {
+                return Some(at + forward_pos(mask));
             }
 
             at += VECTOR_SIZE;
-            if eqc.any() {
-                return Some(at + forward_pos(eqc.bitmask()))
+            let mask = eqc.bitmask();
+            if mask != 0 {
+                return Some(at + forward_pos(mask));
             }
 
             at += VECTOR_SIZE;
-            debug_assert!(eqd.bitmask() != 0);
-            return Some(at + forward_pos(eqd.bitmask()));
+            let mask = eqd.bitmask();
+            debug_assert!(mask != 0);
+            return Some(at + forward_pos(mask));
         }
         ptr = ptr.add(loop_size);
     }
@@ -136,14 +140,16 @@ pub unsafe fn memchr2(n1: u8, n2: u8, haystack: &[u8]) -> Option<usize> {
         let or3 = or1.bitor(or2);
         if or3.any() {
             let mut at = sub(ptr, start_ptr);
-            if eqa1.any() || eqa2.any() {
-                return Some(at + forward_pos2(eqa1.bitmask(), eqa2.bitmask()))
+            let mask1 = eqa1.bitmask();
+            let mask2 = eqa2.bitmask();
+            if mask1 != 0 || mask2 != 0 {
+                return Some(at + forward_pos2(mask1, mask2));
             }
 
             at += VECTOR_SIZE;
-            if eqb1.any() || eqb2.any() {
-                return Some(at + forward_pos2(eqb1.bitmask(), eqb2.bitmask()))
-            }
+            let mask1 = eqb1.bitmask();
+            let mask2 = eqb2.bitmask();
+            return Some(at + forward_pos2(mask1, mask2));
         }
         ptr = ptr.add(loop_size);
     }
@@ -207,14 +213,18 @@ pub unsafe fn memchr3(n1: u8, n2: u8, n3: u8, haystack: &[u8]) -> Option<usize> 
         let or5 = or3.bitor(or4);
         if or5.any() {
             let mut at = sub(ptr, start_ptr);
-            if eqa1.any() || eqa2.any() || eqa3.any() {
-                return Some(at + forward_pos3(eqa1.bitmask(), eqa2.bitmask(), eqa3.bitmask()))
+            let mask1 = eqa1.bitmask();
+            let mask2 = eqa2.bitmask();
+            let mask3 = eqa3.bitmask();
+            if mask1 != 0 || mask2 != 0|| mask3 != 0 {
+                return Some(at + forward_pos3(mask1, mask2, mask3));
             }
 
             at += VECTOR_SIZE;
-            if eqb1.any() || eqb2.any() || eqb3.any() {
-                return Some(at + forward_pos3(eqb1.bitmask(), eqb2.bitmask(), eqb3.bitmask()))
-            }
+            let mask1 = eqb1.bitmask();
+            let mask2 = eqb2.bitmask();
+            let mask3 = eqb3.bitmask();
+            return Some(at + forward_pos3(mask1, mask2, mask3));
         }
         ptr = ptr.add(loop_size);
     }
@@ -276,23 +286,27 @@ pub unsafe fn memrchr(n1: u8, haystack: &[u8]) -> Option<usize> {
         let or3 = or1.bitor(or2);
         if or3.any() {
             let mut at = sub(ptr.add(3 * VECTOR_SIZE), start_ptr);
-            if eqd.any() {
-                return Some(at + reverse_pos(eqd.bitmask()))
+            let mask = eqd.bitmask();
+            if mask != 0 {
+                return Some(at + reverse_pos(mask));
             }
 
             at -= VECTOR_SIZE;
-            if eqc.any() {
-                return Some(at + reverse_pos(eqc.bitmask()))
+            let mask = eqc.bitmask();
+            if mask != 0 {
+                return Some(at + reverse_pos(mask));
             }
 
             at -= VECTOR_SIZE;
-            if eqb.any() {
-                return Some(at + reverse_pos(eqb.bitmask()))
+            let mask = eqb.bitmask();
+            if mask != 0 {
+                return Some(at + reverse_pos(mask));
             }
 
             at -= VECTOR_SIZE;
-            debug_assert!(eqa.bitmask() != 0);
-            return Some(at + reverse_pos(eqa.bitmask()));
+            let mask = eqa.bitmask();
+            debug_assert!(mask != 0);
+            return Some(at + reverse_pos(mask));
         }
     }
     while ptr >= start_ptr.add(VECTOR_SIZE) {
@@ -349,12 +363,16 @@ pub unsafe fn memrchr2(n1: u8, n2: u8, haystack: &[u8]) -> Option<usize> {
         let or3 = or1.bitor(or2);
         if or3.any() {
             let mut at = sub(ptr.add(VECTOR_SIZE), start_ptr);
-            if eqb1.any() || eqb2.any() {
-                return Some(at + reverse_pos2(eqb1.bitmask(), eqb2.bitmask()))
+            let mask1 = eqb1.bitmask();
+            let mask2 = eqb2.bitmask();
+            if mask1 != 0 || mask2 != 0 {
+                return Some(at + reverse_pos2(mask1, mask2));
             }
 
             at -= VECTOR_SIZE;
-            return Some(at + reverse_pos2(eqa1.bitmask(), eqa2.bitmask()));
+            let mask1 = eqa1.bitmask();
+            let mask2 = eqa2.bitmask();
+            return Some(at + reverse_pos2(mask1, mask2));
         }
     }
     while ptr >= start_ptr.add(VECTOR_SIZE) {
@@ -416,12 +434,18 @@ pub unsafe fn memrchr3(n1: u8, n2: u8, n3: u8, haystack: &[u8]) -> Option<usize>
         let or5 = or3.bitor(or4);
         if or5.any() {
             let mut at = sub(ptr.add(VECTOR_SIZE), start_ptr);
-            if eqb1.any() || eqb2.any() || eqb3.any() {
-                return Some(at + reverse_pos3(eqb1.bitmask(), eqb2.bitmask(), eqb3.bitmask()))
+            let mask1 = eqb1.bitmask();
+            let mask2 = eqb2.bitmask();
+            let mask3 = eqb3.bitmask();
+            if mask1 != 0 || mask2 != 0 || mask3 != 0 {
+                return Some(at + reverse_pos3(mask1, mask2, mask3));
             }
 
             at -= VECTOR_SIZE;
-            return Some(at + reverse_pos3(eqa1.bitmask(), eqa2.bitmask(), eqa3.bitmask()));
+            let mask1 = eqa1.bitmask();
+            let mask2 = eqa2.bitmask();
+            let mask3 = eqa3.bitmask();
+            return Some(at + reverse_pos3(mask1, mask2, mask3));
         }
     }
     while ptr >= start_ptr.add(VECTOR_SIZE) {
@@ -449,8 +473,9 @@ pub unsafe fn forward_search1(
 
     let chunk = i8x16_load(ptr);
     let eq = vn1.eq(chunk);
-    if eq.any() {
-        Some(sub(ptr, start_ptr) + forward_pos(eq.bitmask()))
+    let mask = eq.bitmask();
+    if mask != 0 {
+        Some(sub(ptr, start_ptr) + forward_pos(mask))
     } else {
         None
     }
@@ -472,7 +497,9 @@ unsafe fn forward_search2(
     let eq2 = vn2.eq(chunk);
     let or = eq1.bitor(eq2);
     if or.any() {
-        Some(sub(ptr, start_ptr) + forward_pos2(eq1.bitmask(), eq2.bitmask()))
+        let mask1 = eq1.bitmask();
+        let mask2 = eq2.bitmask();
+        Some(sub(ptr, start_ptr) + forward_pos2(mask1, mask2))
     } else {
         None
     }
@@ -497,7 +524,10 @@ unsafe fn forward_search3(
     let or1 = eq1.bitor(eq2);
     let or2 = or1.bitor(eq3);
     if or2.any() {
-        Some(sub(ptr, start_ptr) + forward_pos3(eq1.bitmask(), eq2.bitmask(), eq3.bitmask()))
+        let mask1 = eq1.bitmask();
+        let mask2 = eq2.bitmask();
+        let mask3 = eq3.bitmask();
+        Some(sub(ptr, start_ptr) + forward_pos3(mask1, mask2, mask3))
     } else {
         None
     }
@@ -515,8 +545,9 @@ unsafe fn reverse_search1(
 
     let chunk = i8x16_load(ptr);
     let eq = vn1.eq(chunk);
-    if eq.any() {
-        Some(sub(ptr, start_ptr) + reverse_pos(eq.bitmask()))
+    let mask = eq.bitmask();
+    if mask != 0 {
+        Some(sub(ptr, start_ptr) + reverse_pos(mask))
     } else {
         None
     }
@@ -538,7 +569,9 @@ unsafe fn reverse_search2(
     let eq2 = vn2.eq(chunk);
     let or = eq1.bitor(eq2);
     if or.any() {
-        Some(sub(ptr, start_ptr) + reverse_pos2(eq1.bitmask(), eq2.bitmask()))
+        let mask1 = eq1.bitmask();
+        let mask2 = eq2.bitmask();
+        Some(sub(ptr, start_ptr) + reverse_pos2(mask1, mask2))
     } else {
         None
     }
@@ -563,7 +596,10 @@ unsafe fn reverse_search3(
     let or1 = eq1.bitor(eq2);
     let or2 = or1.bitor(eq3);
     if or2.any() {
-        Some(sub(ptr, start_ptr) + reverse_pos3(eq1.bitmask(), eq2.bitmask(), eq3.bitmask()))
+        let mask1 = eq1.bitmask();
+        let mask2 = eq2.bitmask();
+        let mask3 = eq3.bitmask();
+        Some(sub(ptr, start_ptr) + reverse_pos3(mask1, mask2, mask3))
     } else {
         None
     }

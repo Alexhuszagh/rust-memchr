@@ -12,6 +12,11 @@ edition = "2018"
 [lib]
 bench = false
 
+[features]
+default = ["use_std"]
+nightly = []
+use_std = []
+
 [[bench]]
 name = "memchr"
 harness = false
